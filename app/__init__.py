@@ -105,11 +105,20 @@ def register_template_helpers(app):
 
     @app.context_processor
     def inject_global_settings():
+        from app.models import Product
+
+        nav_search_products = Product.query.filter_by(is_active=True).order_by(
+            Product.is_featured.desc(),
+            Product.display_order.asc(),
+            Product.name.asc()
+        ).limit(30).all()
+
         return {
             'site_settings': get_settings(),
             'money_br': money_br,
             'product_whatsapp_url': product_whatsapp_url,
             'generic_whatsapp_url': generic_whatsapp_url,
+            'nav_search_products': nav_search_products,
         }
 
 

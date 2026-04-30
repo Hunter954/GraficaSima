@@ -30,7 +30,6 @@
           {% if c.image %}<img src="{{ url_for('static', filename=c.image) }}" alt="{{ c.name }}">{% else %}{{ c.name[:2].upper() }}{% endif %}
         </div>
         <h3>{{ c.name }}</h3>
-        <small><i class="bi bi-arrow-right-circle"></i> Ver produtos</small>
       </a>
     {% endfor %}
   </div>
