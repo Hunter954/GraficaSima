@@ -157,6 +157,12 @@ def settings():
             settings.logo = save_image(form.logo.data, 'site')
         if has_uploaded_file(form.hero_image.data):
             settings.hero_image = save_image(form.hero_image.data, 'site')
+        if has_uploaded_file(form.about_image_1.data):
+            settings.about_image_1 = save_image(form.about_image_1.data, 'site')
+        if has_uploaded_file(form.about_image_2.data):
+            settings.about_image_2 = save_image(form.about_image_2.data, 'site')
+        if has_uploaded_file(form.about_image_3.data):
+            settings.about_image_3 = save_image(form.about_image_3.data, 'site')
         db.session.add(settings)
         db.session.commit()
         flash('Configurações salvas.', 'success')

@@ -84,12 +84,17 @@ def ensure_database_compatibility(app):
                 return
 
             columns = {column['name'] for column in inspector.get_columns('site_settings')}
-            if 'hero_image' not in columns:
+            missing_columns = [
+                column_name for column_name in ('hero_image', 'about_image_1', 'about_image_2', 'about_image_3')
+                if column_name not in columns
+            ]
+            if missing_columns:
                 with db.engine.begin() as connection:
-                    connection.execute(text('ALTER TABLE site_settings ADD COLUMN hero_image VARCHAR(255)'))
+                    for column_name in missing_columns:
+                        connection.execute(text(f'ALTER TABLE site_settings ADD COLUMN {column_name} VARCHAR(255)'))
         except (OperationalError, ProgrammingError) as exc:
             message = str(exc).lower()
-            if 'hero_image' in message and ('duplicate' in message or 'already exists' in message):
+            if any(column_name in message for column_name in ('hero_image', 'about_image_1', 'about_image_2', 'about_image_3')) and ('duplicate' in message or 'already exists' in message):
                 return
             raise
 

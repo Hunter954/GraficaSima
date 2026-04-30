@@ -6,7 +6,7 @@
       <span class="eyebrow">Gráfica rápida e personalizada</span>
       <h1>Produtos gráficos com qualidade total e atendimento ágil</h1>
       <p>Catálogo vitrine para panfletos, adesivos, banners, cartões, brindes e comunicação visual. Solicite seu orçamento pelo WhatsApp.</p>
-      <div class="hero-actions"><a class="btn btn-white" href="{{ url_for('public.catalog') }}">Ver produtos</a><a class="btn btn-outline-white" href="{{ whatsapp_url }}" target="_blank">Pedir orçamento</a></div>
+      <div class="hero-actions"><a class="btn btn-white" href="{{ url_for('public.catalog') }}"><i class="bi bi-grid"></i> Ver produtos</a><a class="btn btn-outline-white" href="{{ whatsapp_url }}" target="_blank"><i class="bi bi-whatsapp"></i> Pedir orçamento</a></div>
     </div>
     <div class="hero-card{% if site_settings.hero_image %} hero-card-image{% endif %}">
       {% if site_settings.hero_image %}
@@ -26,7 +26,11 @@
   <div class="category-row">
     {% for c in categories %}
       <a class="category-card" href="{{ url_for('public.catalog', categoria=c.slug) }}">
-        <div class="cat-art">{{ c.name[:2].upper() }}</div><h3>{{ c.name }}</h3><small>Ver produtos</small>
+        <div class="cat-art">
+          {% if c.image %}<img src="{{ url_for('static', filename=c.image) }}" alt="{{ c.name }}">{% else %}{{ c.name[:2].upper() }}{% endif %}
+        </div>
+        <h3>{{ c.name }}</h3>
+        <small><i class="bi bi-arrow-right-circle"></i> Ver produtos</small>
       </a>
     {% endfor %}
   </div>
@@ -36,7 +40,7 @@
   <div class="container section-title"><span>Produtos</span><h2>Produtos em destaque e ofertas exclusivas</h2></div>
   <div class="container product-grid">
     {% for p in featured or latest %}{% include 'public/_product_card.html' %}{% endfor %}
-    <a class="see-all-card" href="{{ url_for('public.catalog') }}"><h3>Veja todos nossos produtos</h3><p>Encontre facilmente o produto que você procura navegando por categorias.</p><span>Ver catálogo</span></a>
+    <a class="see-all-card" href="{{ url_for('public.catalog') }}"><h3>Veja todos nossos produtos</h3><p>Encontre facilmente o produto que você procura navegando por categorias.</p><span><i class="bi bi-grid"></i> Ver catálogo</span></a>
   </div>
 </section>
 
@@ -44,16 +48,20 @@
 
 <section class="section about-home">
   <div class="container about-grid">
-    <div><span class="eyebrow blue">Nossa história</span><h2>Referência em soluções gráficas para empresas</h2><p>Com tecnologia, cuidado com acabamento e atendimento consultivo, ajudamos sua marca a aparecer melhor em impressos, materiais promocionais e comunicação visual.</p><a class="btn" href="{{ url_for('public.page', slug='sobre') }}">Ler mais</a></div>
-    <div class="about-images"><div></div><div></div><div></div></div>
+    <div><span class="eyebrow blue">Nossa história</span><h2>Referência em soluções gráficas para empresas</h2><p>Com tecnologia, cuidado com acabamento e atendimento consultivo, ajudamos sua marca a aparecer melhor em impressos, materiais promocionais e comunicação visual.</p><a class="btn" href="{{ url_for('public.page', slug='sobre') }}"><i class="bi bi-book"></i> Ler mais</a></div>
+    <div class="about-images">
+      <div>{% if site_settings.about_image_1 %}<img src="{{ url_for('static', filename=site_settings.about_image_1) }}" alt="Nossa história 1">{% endif %}</div>
+      <div>{% if site_settings.about_image_2 %}<img src="{{ url_for('static', filename=site_settings.about_image_2) }}" alt="Nossa história 2">{% endif %}</div>
+      <div>{% if site_settings.about_image_3 %}<img src="{{ url_for('static', filename=site_settings.about_image_3) }}" alt="Nossa história 3">{% endif %}</div>
+    </div>
   </div>
 </section>
 
 <section class="section contact-cards">
   <div class="container trio">
-    <div><h3>Fale Conosco</h3><p>Envie sua necessidade e retornaremos com orçamento.</p><a href="{{ url_for('public.contact') }}">Acessar</a></div>
-    <div><h3>Dúvidas Frequentes</h3><p>Veja orientações sobre arquivos, produção e prazos.</p><a href="{{ url_for('public.page', slug='orientacoes-de-producao') }}">Acessar</a></div>
-    <div><h3>Atendimento Online</h3><p>Fale agora pelo WhatsApp com nossa equipe.</p><a href="{{ whatsapp_url }}" target="_blank">WhatsApp</a></div>
+    <div><h3><i class="bi bi-chat-dots"></i> Fale Conosco</h3><p>Envie sua necessidade e retornaremos com orçamento.</p><a href="{{ url_for('public.contact') }}">Acessar</a></div>
+    <div><h3><i class="bi bi-question-circle"></i> Dúvidas Frequentes</h3><p>Veja orientações sobre arquivos, produção e prazos.</p><a href="{{ url_for('public.page', slug='orientacoes-de-producao') }}">Acessar</a></div>
+    <div><h3><i class="bi bi-whatsapp"></i> Atendimento Online</h3><p>Fale agora pelo WhatsApp com nossa equipe.</p><a href="{{ whatsapp_url }}" target="_blank">WhatsApp</a></div>
   </div>
 </section>
 {% endblock %}
