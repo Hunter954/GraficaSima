@@ -42,11 +42,17 @@ def create_app():
 
 def register_template_helpers(app):
     from app.services.settings_service import get_settings
+    from app.services.whatsapp_service import product_whatsapp_url, generic_whatsapp_url
     from app.utils.formatters import money_br
 
     @app.context_processor
     def inject_global_settings():
-        return {'site_settings': get_settings(), 'money_br': money_br}
+        return {
+            'site_settings': get_settings(),
+            'money_br': money_br,
+            'product_whatsapp_url': product_whatsapp_url,
+            'generic_whatsapp_url': generic_whatsapp_url,
+        }
 
 
 def register_cli(app):

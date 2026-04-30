@@ -155,6 +155,8 @@ def settings():
         settings.seo_description = bleach.clean(form.seo_description.data or '')
         if form.logo.data and form.logo.data.filename:
             settings.logo = save_image(form.logo.data, 'site')
+        if form.hero_image.data and form.hero_image.data.filename:
+            settings.hero_image = save_image(form.hero_image.data, 'site')
         db.session.add(settings)
         db.session.commit()
         flash('Configurações salvas.', 'success')

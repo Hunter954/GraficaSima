@@ -2,5 +2,13 @@
   <a href="{{ url_for('public.product_detail', slug=p.slug) }}" class="product-img">
     {% if p.main_image %}<img src="{{ url_for('static', filename=p.main_image) }}" alt="{{ p.name }}">{% else %}<div class="placeholder">{{ p.name[:2].upper() }}</div>{% endif %}
   </a>
-  <div class="product-body"><small>{{ p.category.name }}</small><h3>{{ p.name }}</h3><p>{{ p.short_description }}</p><a class="btn btn-small" href="{{ url_for('public.product_detail', slug=p.slug) }}">Ver detalhes</a></div>
+  <div class="product-body">
+    <small>{{ p.category.name }}</small>
+    <h3>{{ p.name }}</h3>
+    <p>{{ p.short_description }}</p>
+    <div class="product-actions">
+      <a class="btn btn-small" href="{{ url_for('public.product_detail', slug=p.slug) }}">Ver detalhes</a>
+      <a class="btn btn-small btn-whatsapp" href="{{ product_whatsapp_url(p) }}" target="_blank" rel="noopener" aria-label="Solicitar {{ p.name }} pelo WhatsApp">WhatsApp</a>
+    </div>
+  </div>
 </article>

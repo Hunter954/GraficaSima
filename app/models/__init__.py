@@ -72,6 +72,7 @@ class SiteSetting(db.Model, TimestampMixin):
     id = db.Column(db.Integer, primary_key=True)
     site_name = db.Column(db.String(160), nullable=False, default='Gráfica Azul')
     logo = db.Column(db.String(255))
+    hero_image = db.Column(db.String(255))
     whatsapp = db.Column(db.String(30))
     email = db.Column(db.String(180))
     phone = db.Column(db.String(60))

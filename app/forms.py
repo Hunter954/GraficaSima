@@ -44,6 +44,7 @@ class ProductForm(FlaskForm):
 class SettingsForm(FlaskForm):
     site_name = StringField('Nome da gráfica', validators=[DataRequired(), Length(max=160)])
     logo = FileField('Logo', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])
+    hero_image = FileField('Imagem do destaque inicial', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])
     whatsapp = StringField('WhatsApp', validators=[Optional(), Length(max=30)])
     email = StringField('E-mail', validators=[Optional(), Email(), Length(max=180)])
     phone = StringField('Telefone', validators=[Optional(), Length(max=60)])
