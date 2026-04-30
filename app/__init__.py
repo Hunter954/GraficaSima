@@ -3,6 +3,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
+from sqlalchemy import inspect, text
+from sqlalchemy.exc import OperationalError, ProgrammingError
 from dotenv import load_dotenv
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -29,6 +31,7 @@ def create_app():
     csrf.init_app(app)
 
     from app.models import Admin, Category, Product, ProductImage, ProductOption, SiteSetting, Page, ContactLead
+    ensure_database_compatibility(app)
 
     from app.routes.public import public_bp
     from app.routes.admin import admin_bp
@@ -39,6 +42,25 @@ def create_app():
     register_template_helpers(app)
     return app
 
+
+
+def ensure_database_compatibility(app):
+    """Ensure small schema additions exist when the app starts on an older database."""
+    with app.app_context():
+        try:
+            inspector = inspect(db.engine)
+            if not inspector.has_table('site_settings'):
+                return
+
+            columns = {column['name'] for column in inspector.get_columns('site_settings')}
+            if 'hero_image' not in columns:
+                with db.engine.begin() as connection:
+                    connection.execute(text('ALTER TABLE site_settings ADD COLUMN hero_image VARCHAR(255)'))
+        except (OperationalError, ProgrammingError) as exc:
+            message = str(exc).lower()
+            if 'hero_image' in message and ('duplicate' in message or 'already exists' in message):
+                return
+            raise
 
 def register_template_helpers(app):
     from app.services.settings_service import get_settings
