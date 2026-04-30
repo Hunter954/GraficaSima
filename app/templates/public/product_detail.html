@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section"><div class="container product-detail">
+  <div>
+    {% if product.main_image %}<img class="detail-img" src="{{ url_for('static', filename=product.main_image) }}" alt="{{ product.name }}">{% else %}<div class="detail-img placeholder big">{{ product.name[:2].upper() }}</div>{% endif %}
+    {% if product.images %}<div class="gallery">{% for img in product.images %}<img src="{{ url_for('static', filename=img.image) }}" alt="{{ img.alt_text or product.name }}">{% endfor %}</div>{% endif %}
+  </div>
+  <div class="detail-copy"><small>{{ product.category.name }}</small><h1>{{ product.name }}</h1><p class="lead">{{ product.short_description }}</p><div class="rich">{{ product.full_description|safe }}</div>
+    {% if product.options %}<h3>Opções disponíveis</h3><dl class="options">{% for o in product.options %}<div><dt>{{ o.name }}</dt><dd>{{ o.value }}</dd></div>{% endfor %}</dl>{% endif %}
+    <a class="btn btn-lg" href="{{ whatsapp_url }}" target="_blank">Solicitar orçamento pelo WhatsApp</a>
+  </div>
+</div></section>
+{% if related %}<section class="section muted"><div class="container section-title"><span>Relacionados</span><h2>Produtos relacionados</h2></div><div class="container product-grid">{% for p in related %}{% include 'public/_product_card.html' %}{% endfor %}</div></section>{% endif %}
+{% endblock %}

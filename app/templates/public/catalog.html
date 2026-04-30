@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-hero"><div class="container"><h1>Catálogo</h1><p>Busque produtos e serviços gráficos para solicitar orçamento.</p></div></section>
+<section class="section"><div class="container">
+  <form class="filters" method="get">
+    <input name="q" placeholder="Buscar por nome ou palavra-chave" value="{{ q }}">
+    <select name="categoria"><option value="">Todas as categorias</option>{% for c in categories %}<option value="{{ c.slug }}" {% if current_category and current_category.id == c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select>
+    <select name="ordem"><option value="destaque" {% if order=='destaque' %}selected{% endif %}>Destaques</option><option value="recentes" {% if order=='recentes' %}selected{% endif %}>Recentes</option><option value="az" {% if order=='az' %}selected{% endif %}>A-Z</option></select>
+    <button class="btn" type="submit">Filtrar</button>
+  </form>
+  <div class="product-grid">{% for p in pagination.items %}{% include 'public/_product_card.html' %}{% else %}<p>Nenhum produto encontrado.</p>{% endfor %}</div>
+  {% if pagination.pages > 1 %}<div class="pagination">{% if pagination.has_prev %}<a href="{{ url_for('public.catalog', page=pagination.prev_num, q=q, categoria=request.args.get('categoria',''), ordem=order) }}">Anterior</a>{% endif %}<span>Página {{ pagination.page }} de {{ pagination.pages }}</span>{% if pagination.has_next %}<a href="{{ url_for('public.catalog', page=pagination.next_num, q=q, categoria=request.args.get('categoria',''), ordem=order) }}">Próxima</a>{% endif %}</div>{% endif %}
+</div></section>
+{% endblock %}

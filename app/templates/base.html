@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or site_settings.seo_title or site_settings.site_name }}</title>
+  <meta name="description" content="{{ description or site_settings.seo_description or 'Produtos gráficos personalizados e orçamento via WhatsApp.' }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="{{ url_for('public.home') }}">
+        {% if site_settings.logo %}<img src="{{ url_for('static', filename=site_settings.logo) }}" alt="{{ site_settings.site_name }}">{% else %}<span>{{ site_settings.site_name }}</span>{% endif %}
+      </a>
+      <form class="search" action="{{ url_for('public.catalog') }}">
+        <input type="search" name="q" placeholder="Buscar produto..." value="{{ request.args.get('q','') }}">
+      </form>
+      <nav class="nav">
+        <a href="{{ url_for('public.home') }}">Início</a>
+        <a href="{{ url_for('public.catalog') }}">Produtos</a>
+        <a href="{{ url_for('public.page', slug='sobre') }}">Empresa</a>
+        <a href="{{ url_for('public.contact') }}">Contato</a>
+      </nav>
+      <a class="btn btn-light" href="https://wa.me/{{ site_settings.whatsapp|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}" target="_blank">WhatsApp</a>
+    </div>
+  </header>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}<div class="container flash-wrap">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+  {% endwith %}
+  <main>{% block content %}{% endblock %}</main>
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div><h3>{{ site_settings.site_name }}</h3><p>Impressos, brindes e comunicação visual com qualidade profissional.</p></div>
+      <div><h4>Contato</h4><p>{{ site_settings.phone }}<br>{{ site_settings.email }}<br>{{ site_settings.whatsapp }}</p></div>
+      <div><h4>Endereço</h4><p>{{ site_settings.address }}<br>{{ site_settings.opening_hours }}</p></div>
+      <div><h4>Links</h4><a href="{{ url_for('public.page', slug='politica-de-privacidade') }}">Privacidade</a><a href="{{ url_for('public.page', slug='termos-de-uso') }}">Termos</a><a href="{{ url_for('public.page', slug='orientacoes-de-producao') }}">Orientações</a></div>
+    </div>
+    <div class="footer-bottom">© {{ site_settings.site_name }}. Todos os direitos reservados.</div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,7 @@
+Migrations do Flask-Migrate/Alembic.
+
+Para gerar a primeira migration em um ambiente com dependências instaladas:
+
+flask --app wsgi db init   # só se esta pasta não existir
+flask --app wsgi db migrate -m "initial"
+flask --app wsgi db upgrade
