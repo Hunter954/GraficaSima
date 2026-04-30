@@ -102,7 +102,8 @@
   background:transparent!important;
   border-radius:0!important;
   box-shadow:none!important;
-  width:100%;
+  width:130%;
+  max-width:none;
   height:auto;
   max-height:430px;
   object-fit:contain;
@@ -126,5 +127,19 @@
   .category-row{
     grid-template-columns:repeat(6,132px)!important;
     width:92%;
+  }
+}
+
+/* Ajuste responsivo da imagem destaque aumentada */
+@media(max-width:860px){
+  .hero-card-image .hero-promo-img{
+    width:115%;
+    max-width:none;
+  }
+}
+@media(max-width:420px){
+  .hero-card-image .hero-promo-img{
+    width:100%;
+    max-width:100%;
   }
 }
