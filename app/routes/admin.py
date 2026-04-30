@@ -140,7 +140,7 @@ def product_delete(id):
 @admin_required
 def settings():
     settings = SiteSetting.query.first() or SiteSetting()
-    form = SettingsForm(obj=settings)
+    form = SettingsForm(obj=settings) if request.method == 'GET' else SettingsForm()
     if form.validate_on_submit():
         settings.site_name = bleach.clean(form.site_name.data)
         settings.whatsapp = bleach.clean(form.whatsapp.data or '')
@@ -153,15 +153,27 @@ def settings():
         settings.opening_hours = bleach.clean(form.opening_hours.data or '')
         settings.seo_title = bleach.clean(form.seo_title.data or '')
         settings.seo_description = bleach.clean(form.seo_description.data or '')
-        if form.logo.data and form.logo.data.filename:
+        if has_uploaded_file(form.logo.data):
             settings.logo = save_image(form.logo.data, 'site')
-        if form.hero_image.data and form.hero_image.data.filename:
+        if has_uploaded_file(form.hero_image.data):
             settings.hero_image = save_image(form.hero_image.data, 'site')
         db.session.add(settings)
         db.session.commit()
         flash('Configurações salvas.', 'success')
         return redirect(url_for('admin.settings'))
     return render_template('admin/settings.html', form=form, settings=settings)
+
+
+def has_uploaded_file(value):
+    return bool(value and hasattr(value, 'filename') and value.filename)
+
+
+def uploaded_files(value):
+    if not value:
+        return []
+    if not isinstance(value, (list, tuple)):
+        value = [value]
+    return [item for item in value if has_uploaded_file(item)]
 
 
 def prepare_product_form(form):
@@ -174,7 +186,7 @@ def fill_category(cat, form):
     cat.description = bleach.clean(form.description.data or '')
     cat.is_active = bool(form.is_active.data)
     cat.display_order = form.display_order.data or 0
-    if form.image.data and form.image.data.filename:
+    if has_uploaded_file(form.image.data):
         cat.image = save_image(form.image.data, 'categories')
 
 
@@ -196,15 +208,13 @@ def fill_product(product, form):
     product.stock = form.stock.data or 0
     product.allow_online_purchase = bool(form.allow_online_purchase.data)
 
-    if form.main_image.data and form.main_image.data.filename:
+    if has_uploaded_file(form.main_image.data):
         product.main_image = save_image(form.main_image.data, 'products')
 
     db.session.flush()
-    if form.gallery.data:
-        for idx, img in enumerate(form.gallery.data, start=1):
-            if img and img.filename:
-                path = save_image(img, 'products')
-                db.session.add(ProductImage(product=product, image=path, alt_text=product.name, display_order=idx))
+    for idx, img in enumerate(uploaded_files(form.gallery.data), start=1):
+        path = save_image(img, 'products')
+        db.session.add(ProductImage(product=product, image=path, alt_text=product.name, display_order=idx))
 
     ProductOption.query.filter_by(product=product).delete()
     lines = (form.options_text.data or '').splitlines()

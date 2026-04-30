@@ -1,4 +1,5 @@
 import os
+import shutil
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -21,10 +22,7 @@ def create_app():
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     os.makedirs(app.instance_path, exist_ok=True)
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'products'), exist_ok=True)
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'categories'), exist_ok=True)
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'site'), exist_ok=True)
+    prepare_upload_storage(app)
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -41,6 +39,39 @@ def create_app():
     register_cli(app)
     register_template_helpers(app)
     return app
+
+
+def prepare_upload_storage(app):
+    """Prepare persistent uploads and keep /static/uploads URLs working."""
+    upload_folder = os.path.abspath(app.config['UPLOAD_FOLDER'])
+    app.config['UPLOAD_FOLDER'] = upload_folder
+    os.makedirs(upload_folder, exist_ok=True)
+    for subfolder in ('products', 'categories', 'site'):
+        os.makedirs(os.path.join(upload_folder, subfolder), exist_ok=True)
+
+    public_uploads = os.path.join(app.static_folder, 'uploads')
+    if os.path.abspath(public_uploads) == upload_folder:
+        return
+
+    os.makedirs(os.path.dirname(public_uploads), exist_ok=True)
+    try:
+        if os.path.islink(public_uploads):
+            current_target = os.readlink(public_uploads)
+            if os.path.abspath(current_target) == upload_folder:
+                return
+            os.unlink(public_uploads)
+        elif os.path.isdir(public_uploads):
+            shutil.copytree(public_uploads, upload_folder, dirs_exist_ok=True)
+            shutil.rmtree(public_uploads)
+        elif os.path.exists(public_uploads):
+            os.remove(public_uploads)
+
+        os.symlink(upload_folder, public_uploads, target_is_directory=True)
+    except OSError:
+        os.makedirs(public_uploads, exist_ok=True)
+        app.config['UPLOAD_FOLDER'] = public_uploads
+        for subfolder in ('products', 'categories', 'site'):
+            os.makedirs(os.path.join(public_uploads, subfolder), exist_ok=True)
 
 
 
