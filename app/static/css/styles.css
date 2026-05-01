@@ -229,7 +229,7 @@
     opacity:0;
     pointer-events:none;
     transition:.22s ease;
-    z-index:101;
+    z-index:120;
   }
   .mobile-drawer{
     position:fixed;
@@ -246,7 +246,7 @@
     transform:translateX(-105%);
     transition:.25s ease;
     box-shadow:22px 0 55px #001f3a40;
-    z-index:102;
+    z-index:130;
     overflow-y:auto;
   }
   .nav-check:checked ~ .mobile-menu-backdrop{
