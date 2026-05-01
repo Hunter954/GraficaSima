@@ -5,18 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ title or site_settings.seo_title or site_settings.site_name }}</title>
   <meta name="description" content="{{ description or site_settings.seo_description or 'Produtos gráficos personalizados e orçamento via WhatsApp.' }}">
+  {% if site_settings.favicon %}<link rel="icon" href="{{ url_for('static', filename=site_settings.favicon) }}">{% endif %}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
   <header class="site-header">
     <div class="container nav-wrap">
+      <input class="nav-check" type="checkbox" id="mobile-menu-toggle" aria-hidden="true">
+      <label class="menu-toggle" for="mobile-menu-toggle" aria-label="Abrir menu"><i class="bi bi-list"></i></label>
+
       <a class="brand" href="{{ url_for('public.home') }}">
         {% if site_settings.logo %}<img src="{{ url_for('static', filename=site_settings.logo) }}" alt="{{ site_settings.site_name }}">{% else %}<span>{{ site_settings.site_name }}</span>{% endif %}
       </a>
-      <input class="nav-check" type="checkbox" id="mobile-menu-toggle" aria-hidden="true">
-      <label class="menu-toggle" for="mobile-menu-toggle" aria-label="Abrir menu"><i class="bi bi-list"></i></label>
-      <form class="search" action="{{ url_for('public.catalog') }}" autocomplete="off">
+
+      <form class="search search-desktop" action="{{ url_for('public.catalog') }}" autocomplete="off">
         <div class="search-box">
           <input class="search-input" type="search" name="q" placeholder="Buscar produto..." value="{{ request.args.get('q','') }}" aria-label="Buscar produto">
           <div class="search-suggestions" role="listbox" aria-label="Sugestões de produtos">
@@ -35,13 +38,48 @@
           </div>
         </div>
       </form>
-      <nav class="nav">
+
+      <nav class="nav nav-desktop">
         <a href="{{ url_for('public.home') }}"><i class="bi bi-house-door"></i> Início</a>
         <a href="{{ url_for('public.catalog') }}"><i class="bi bi-grid"></i> Produtos</a>
         <a href="{{ url_for('public.page', slug='sobre') }}"><i class="bi bi-building"></i> Empresa</a>
         <a href="{{ url_for('public.contact') }}"><i class="bi bi-envelope"></i> Contato</a>
       </nav>
-      <a class="btn btn-light header-whatsapp" href="https://wa.me/{{ site_settings.whatsapp|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}" target="_blank"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+
+      <a class="btn btn-light header-whatsapp" href="https://wa.me/{{ site_settings.whatsapp|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}" target="_blank" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i><span>WhatsApp</span></a>
+
+      <label class="mobile-menu-backdrop" for="mobile-menu-toggle" aria-label="Fechar menu"></label>
+      <aside class="mobile-drawer" aria-label="Menu mobile">
+        <div class="mobile-drawer-head">
+          <strong>Menu</strong>
+          <label for="mobile-menu-toggle" aria-label="Fechar menu"><i class="bi bi-x-lg"></i></label>
+        </div>
+        <form class="search search-mobile" action="{{ url_for('public.catalog') }}" autocomplete="off">
+          <div class="search-box">
+            <input class="search-input" type="search" name="q" placeholder="Buscar produto..." value="{{ request.args.get('q','') }}" aria-label="Buscar produto">
+            <div class="search-suggestions" role="listbox" aria-label="Sugestões de produtos">
+              {% for product in nav_search_products %}
+                <a class="search-suggestion" href="{{ url_for('public.product_detail', slug=product.slug) }}" data-product-name="{{ product.name|lower }}" role="option">
+                  <span class="suggestion-thumb">
+                    {% if product.main_image %}<img src="{{ url_for('static', filename=product.main_image) }}" alt="{{ product.name }}">{% else %}<span>{{ product.name[:2].upper() }}</span>{% endif %}
+                  </span>
+                  <span class="suggestion-info">
+                    <strong>{{ product.name }}</strong>
+                    <small>{{ product.category.name }}</small>
+                  </span>
+                </a>
+              {% endfor %}
+              <div class="search-empty">Nenhum produto encontrado</div>
+            </div>
+          </div>
+        </form>
+        <nav class="mobile-nav">
+          <a href="{{ url_for('public.home') }}"><i class="bi bi-house-door"></i> Início</a>
+          <a href="{{ url_for('public.catalog') }}"><i class="bi bi-grid"></i> Produtos</a>
+          <a href="{{ url_for('public.page', slug='sobre') }}"><i class="bi bi-building"></i> Empresa</a>
+          <a href="{{ url_for('public.contact') }}"><i class="bi bi-envelope"></i> Contato</a>
+        </nav>
+      </aside>
     </div>
   </header>
   {% with messages = get_flashed_messages(with_categories=true) %}

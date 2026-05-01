@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 import secrets
 
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp', 'gif'}
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp', 'gif', 'ico'}
 
 
 def admin_required(fn):

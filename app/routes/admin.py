@@ -201,6 +201,8 @@ def settings():
         settings.seo_description = bleach.clean(form.seo_description.data or '')
         if has_uploaded_file(form.logo.data):
             settings.logo = save_image(form.logo.data, 'site')
+        if has_uploaded_file(form.favicon.data):
+            settings.favicon = save_image(form.favicon.data, 'site')
         if has_uploaded_file(form.hero_image.data):
             settings.hero_image = save_image(form.hero_image.data, 'site')
         if has_uploaded_file(form.about_image_1.data):

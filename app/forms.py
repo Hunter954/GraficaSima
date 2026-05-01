@@ -4,6 +4,7 @@ from wtforms import StringField, PasswordField, TextAreaField, BooleanField, Int
 from wtforms.validators import DataRequired, Email, Length, Optional, NumberRange
 
 IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif']
+FAVICON_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'ico']
 
 class LoginForm(FlaskForm):
     email = StringField('E-mail', validators=[DataRequired(), Email(), Length(max=180)])
@@ -45,6 +46,7 @@ class ProductForm(FlaskForm):
 class SettingsForm(FlaskForm):
     site_name = StringField('Nome da gráfica', validators=[DataRequired(), Length(max=160)])
     logo = FileField('Logo', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])
+    favicon = FileField('Favicon do site', validators=[Optional(), FileAllowed(FAVICON_EXTENSIONS, 'Apenas imagens ou .ico')])
     hero_image = FileField('Imagem do destaque inicial', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])
     about_image_1 = FileField('Imagem Nossa historia - card 1', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])
     about_image_2 = FileField('Imagem Nossa historia - card 2', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])

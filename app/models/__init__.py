@@ -73,6 +73,7 @@ class SiteSetting(db.Model, TimestampMixin):
     id = db.Column(db.Integer, primary_key=True)
     site_name = db.Column(db.String(160), nullable=False, default='Gráfica Azul')
     logo = db.Column(db.String(255))
+    favicon = db.Column(db.String(255))
     hero_image = db.Column(db.String(255))
     about_image_1 = db.Column(db.String(255))
     about_image_2 = db.Column(db.String(255))
