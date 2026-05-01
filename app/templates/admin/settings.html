@@ -1,15 +1,20 @@
 {% extends 'admin/base_admin.html' %}
 {% block content %}
-<h1>Configurações do site</h1>
+<div class="topbar">
+  <h1><i class="bi bi-gear"></i> Configurações do site</h1>
+</div>
 <form method="post" enctype="multipart/form-data" class="panel form-grid">
   {{ form.hidden_tag() }}
+  <h2 class="full"><i class="bi bi-building"></i> Identidade</h2>
   <label>{{ form.site_name.label }}{{ form.site_name() }}</label>
   <label>{{ form.logo.label }}{{ form.logo() }}</label>
   <label>{{ form.hero_image.label }}{{ form.hero_image() }}</label>
   <label>{{ form.about_image_1.label }}{{ form.about_image_1() }}</label>
   <label>{{ form.about_image_2.label }}{{ form.about_image_2() }}</label>
   <label>{{ form.about_image_3.label }}{{ form.about_image_3() }}</label>
-  <label>{{ form.whatsapp.label }}{{ form.whatsapp() }}</label>
+
+  <h2 class="full"><i class="bi bi-person-lines-fill"></i> Contato e redes sociais</h2>
+  <label>{{ form.whatsapp.label }}{{ form.whatsapp() }}<small>Use somente o número com DDI/DDD. Ele alimenta o botão e o ícone de WhatsApp.</small></label>
   <label>{{ form.email.label }}{{ form.email() }}</label>
   <label>{{ form.phone.label }}{{ form.phone() }}</label>
   <label>{{ form.address.label }}{{ form.address() }}</label>
@@ -17,8 +22,10 @@
   <label>{{ form.facebook.label }}{{ form.facebook() }}</label>
   <label>{{ form.linkedin.label }}{{ form.linkedin() }}</label>
   <label>{{ form.opening_hours.label }}{{ form.opening_hours() }}</label>
+
+  <h2 class="full"><i class="bi bi-search"></i> SEO</h2>
   <label>{{ form.seo_title.label }}{{ form.seo_title() }}</label>
   <label class="full">{{ form.seo_description.label }}{{ form.seo_description(rows=3) }}</label>
-  <div class="full">{{ form.submit(class='btn') }}</div>
+  <div class="full form-actions">{{ form.submit(class='btn') }}</div>
 </form>
 {% endblock %}

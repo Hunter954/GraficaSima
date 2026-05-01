@@ -11,7 +11,7 @@ public_bp = Blueprint('public', __name__)
 @public_bp.route('/')
 def home():
     featured = Product.query.filter_by(is_active=True, is_featured=True).order_by(Product.display_order, Product.created_at.desc()).limit(8).all()
-    categories = Category.query.filter_by(is_active=True).order_by(Category.display_order, Category.name).limit(8).all()
+    categories = Category.query.filter_by(is_active=True, show_on_home=True).order_by(Category.display_order, Category.name).limit(6).all()
     latest = Product.query.filter_by(is_active=True).order_by(Product.created_at.desc()).limit(6).all()
     return render_template('public/home.html', featured=featured, categories=categories, latest=latest, whatsapp_url=generic_whatsapp_url())
 

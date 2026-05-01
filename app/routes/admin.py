@@ -52,7 +52,7 @@ def categories():
 @admin_bp.route('/categorias/nova', methods=['GET', 'POST'])
 @admin_required
 def category_create():
-    form = CategoryForm(is_active=True)
+    form = CategoryForm(is_active=True, show_on_home=True)
     if form.validate_on_submit():
         cat = Category()
         fill_category(cat, form)
@@ -127,6 +127,52 @@ def product_toggle(id):
     flash('Status do produto atualizado.', 'success')
     return redirect(url_for('admin.products'))
 
+@admin_bp.route('/produtos/<int:id>/duplicar', methods=['POST'])
+@admin_required
+def product_duplicate(id):
+    original = Product.query.get_or_404(id)
+    duplicate = Product(
+        category_id=original.category_id,
+        name=f'{original.name} - Cópia',
+        slug=make_unique_product_slug(f'{original.slug}-copia'),
+        short_description=original.short_description,
+        full_description=original.full_description,
+        main_image=original.main_image,
+        is_active=False,
+        is_featured=False,
+        display_order=original.display_order,
+        whatsapp_message=original.whatsapp_message,
+        seo_title=original.seo_title,
+        seo_description=original.seo_description,
+        sku='',
+        price=original.price,
+        promotional_price=original.promotional_price,
+        stock=original.stock,
+        allow_online_purchase=original.allow_online_purchase,
+    )
+    db.session.add(duplicate)
+    db.session.flush()
+
+    for image in original.images:
+        db.session.add(ProductImage(
+            product=duplicate,
+            image=image.image,
+            alt_text=image.alt_text,
+            display_order=image.display_order,
+        ))
+
+    for option in original.options:
+        db.session.add(ProductOption(
+            product=duplicate,
+            name=option.name,
+            value=option.value,
+            display_order=option.display_order,
+        ))
+
+    db.session.commit()
+    flash('Produto duplicado. Revise e ative a cópia quando estiver pronta.', 'success')
+    return redirect(url_for('admin.product_edit', id=duplicate.id))
+
 @admin_bp.route('/produtos/<int:id>/excluir', methods=['POST'])
 @admin_required
 def product_delete(id):
@@ -191,9 +237,21 @@ def fill_category(cat, form):
     cat.slug = slugify(form.slug.data or form.name.data)
     cat.description = bleach.clean(form.description.data or '')
     cat.is_active = bool(form.is_active.data)
+    cat.show_on_home = bool(form.show_on_home.data)
     cat.display_order = form.display_order.data or 0
     if has_uploaded_file(form.image.data):
         cat.image = save_image(form.image.data, 'categories')
+
+
+
+def make_unique_product_slug(base_slug):
+    base = slugify(base_slug) or 'produto-copia'
+    candidate = base
+    counter = 2
+    while Product.query.filter_by(slug=candidate).first():
+        candidate = f'{base}-{counter}'
+        counter += 1
+    return candidate
 
 
 def fill_product(product, form):

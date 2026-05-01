@@ -16,6 +16,7 @@ class CategoryForm(FlaskForm):
     description = TextAreaField('Descrição', validators=[Optional(), Length(max=2000)])
     image = FileField('Icone/imagem da categoria', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])
     is_active = BooleanField('Ativa')
+    show_on_home = BooleanField('Exibir nos destaques da home')
     display_order = IntegerField('Ordem', validators=[Optional(), NumberRange(min=0)], default=0)
     submit = SubmitField('Salvar')
 
@@ -52,8 +53,8 @@ class SettingsForm(FlaskForm):
     email = StringField('E-mail', validators=[Optional(), Email(), Length(max=180)])
     phone = StringField('Telefone', validators=[Optional(), Length(max=60)])
     address = StringField('Endereço', validators=[Optional(), Length(max=255)])
-    instagram = StringField('Instagram', validators=[Optional(), Length(max=255)])
-    facebook = StringField('Facebook', validators=[Optional(), Length(max=255)])
+    instagram = StringField('URL do Instagram', validators=[Optional(), Length(max=255)])
+    facebook = StringField('URL do Facebook', validators=[Optional(), Length(max=255)])
     linkedin = StringField('LinkedIn', validators=[Optional(), Length(max=255)])
     opening_hours = StringField('Horário de atendimento', validators=[Optional(), Length(max=160)])
     seo_title = StringField('SEO title', validators=[Optional(), Length(max=180)])

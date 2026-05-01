@@ -143,3 +143,6 @@
     max-width:100%;
   }
 }
+
+/* Redes sociais no rodape */
+.footer-social-title{display:block;margin:18px 0 10px;font-weight:900;color:#fff}.footer-social-icons{display:flex;align-items:center;gap:10px}.footer-social-icons a{width:40px;height:40px;border-radius:50%;display:inline-flex!important;align-items:center;justify-content:center;background:#ffffff18;border:1px solid #ffffff33;color:#fff!important;margin:0!important;transition:.2s ease}.footer-social-icons a:hover{background:#fff;color:var(--primary)!important;transform:translateY(-2px)}.footer-social-icons i{font-size:19px;margin:0!important}

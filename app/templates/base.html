@@ -62,6 +62,12 @@
           {% if site_settings.whatsapp %}<a href="https://wa.me/{{ site_settings.whatsapp|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> {{ site_settings.whatsapp }}</a>{% elif site_settings.phone %}<a href="tel:{{ site_settings.phone|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}"><i class="bi bi-telephone"></i> {{ site_settings.phone }}</a>{% endif %}
           {% if site_settings.email %}<a href="mailto:{{ site_settings.email }}"><i class="bi bi-envelope"></i> {{ site_settings.email }}</a>{% endif %}
         </div>
+        <strong class="footer-social-title">Redes Sociais</strong>
+        <div class="footer-social-icons" aria-label="Redes sociais">
+          {% if site_settings.whatsapp %}<a href="https://wa.me/{{ site_settings.whatsapp|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>{% endif %}
+          {% if site_settings.instagram %}<a href="{{ site_settings.instagram }}" target="_blank" rel="noopener" aria-label="Instagram"><i class="bi bi-instagram"></i></a>{% endif %}
+          {% if site_settings.facebook %}<a href="{{ site_settings.facebook }}" target="_blank" rel="noopener" aria-label="Facebook"><i class="bi bi-facebook"></i></a>{% endif %}
+        </div>
       </div>
       <div>
         <h4>Endereço</h4>

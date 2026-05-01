@@ -92,9 +92,15 @@ def ensure_database_compatibility(app):
                 with db.engine.begin() as connection:
                     for column_name in missing_columns:
                         connection.execute(text(f'ALTER TABLE site_settings ADD COLUMN {column_name} VARCHAR(255)'))
+
+            if inspector.has_table('categories'):
+                category_columns = {column['name'] for column in inspector.get_columns('categories')}
+                if 'show_on_home' not in category_columns:
+                    with db.engine.begin() as connection:
+                        connection.execute(text('ALTER TABLE categories ADD COLUMN show_on_home BOOLEAN NOT NULL DEFAULT TRUE'))
         except (OperationalError, ProgrammingError) as exc:
             message = str(exc).lower()
-            if any(column_name in message for column_name in ('hero_image', 'about_image_1', 'about_image_2', 'about_image_3')) and ('duplicate' in message or 'already exists' in message):
+            if any(column_name in message for column_name in ('hero_image', 'about_image_1', 'about_image_2', 'about_image_3', 'show_on_home')) and ('duplicate' in message or 'already exists' in message):
                 return
             raise
 

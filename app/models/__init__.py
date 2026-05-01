@@ -21,6 +21,7 @@ class Category(db.Model, TimestampMixin):
     description = db.Column(db.Text)
     image = db.Column(db.String(255))
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    show_on_home = db.Column(db.Boolean, default=True, nullable=False)
     display_order = db.Column(db.Integer, default=0, nullable=False)
     products = db.relationship('Product', back_populates='category', lazy=True)
 

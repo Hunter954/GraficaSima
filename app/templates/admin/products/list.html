@@ -1,1 +1,33 @@
-{% extends 'admin/base_admin.html' %}{% block content %}<div class="topbar"><h1>Produtos</h1><a class="btn" href="{{ url_for('admin.product_create') }}">Novo produto</a></div><table><tr><th>Produto</th><th>Categoria</th><th>Destaque</th><th>Status</th><th>Ações</th></tr>{% for item in items %}<tr><td>{{ item.name }}</td><td>{{ item.category.name }}</td><td>{{ 'Sim' if item.is_featured else 'Não' }}</td><td>{{ 'Ativo' if item.is_active else 'Inativo' }}</td><td><a href="{{ url_for('admin.product_edit', id=item.id) }}">Editar</a><form method="post" action="{{ url_for('admin.product_toggle', id=item.id) }}" class="inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button>Alternar</button></form><form method="post" action="{{ url_for('admin.product_delete', id=item.id) }}" class="inline" onsubmit="return confirm('Excluir produto?')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button>Excluir</button></form></td></tr>{% endfor %}</table>{% endblock %}
+{% extends 'admin/base_admin.html' %}
+{% block content %}
+<div class="topbar">
+  <h1><i class="bi bi-box-seam"></i> Produtos</h1>
+  <a class="btn" href="{{ url_for('admin.product_create') }}"><i class="bi bi-plus-lg"></i> Novo produto</a>
+</div>
+<table>
+  <tr><th>Produto</th><th>Categoria</th><th>Destaque</th><th>Status</th><th>Ações</th></tr>
+  {% for item in items %}
+    <tr>
+      <td>{{ item.name }}</td>
+      <td>{{ item.category.name }}</td>
+      <td>{% if item.is_featured %}<span class="badge ok"><i class="bi bi-star-fill"></i> Sim</span>{% else %}<span class="badge muted">Não</span>{% endif %}</td>
+      <td>{% if item.is_active %}<span class="badge ok">Ativo</span>{% else %}<span class="badge off">Inativo</span>{% endif %}</td>
+      <td class="actions-cell">
+        <a class="btn btn-sm btn-soft" href="{{ url_for('admin.product_edit', id=item.id) }}"><i class="bi bi-pencil-square"></i> Editar</a>
+        <form method="post" action="{{ url_for('admin.product_duplicate', id=item.id) }}" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm btn-copy" type="submit"><i class="bi bi-files"></i> Duplicar</button>
+        </form>
+        <form method="post" action="{{ url_for('admin.product_toggle', id=item.id) }}" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm" type="submit"><i class="bi bi-arrow-repeat"></i> Alternar</button>
+        </form>
+        <form method="post" action="{{ url_for('admin.product_delete', id=item.id) }}" class="inline" onsubmit="return confirm('Excluir produto?')">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm btn-danger" type="submit"><i class="bi bi-trash"></i> Excluir</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

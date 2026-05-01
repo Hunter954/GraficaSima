@@ -1,1 +1,18 @@
-{% extends 'admin/base_admin.html' %}{% block content %}<h1>{{ title }}</h1><form method="post" enctype="multipart/form-data" class="panel form-grid">{{ form.hidden_tag() }}<label>{{ form.name.label }}{{ form.name() }}</label><label>{{ form.slug.label }}{{ form.slug() }}</label><label class="full">{{ form.description.label }}{{ form.description(rows=5) }}</label><label>{{ form.image.label }}{{ form.image() }}</label><label>{{ form.display_order.label }}{{ form.display_order() }}</label><label class="check">{{ form.is_active() }} {{ form.is_active.label }}</label><div class="full">{{ form.submit(class='btn') }}</div></form>{% endblock %}
+{% extends 'admin/base_admin.html' %}
+{% block content %}
+<div class="topbar">
+  <h1><i class="bi bi-tag"></i> {{ title }}</h1>
+  <a class="btn btn-soft" href="{{ url_for('admin.categories') }}"><i class="bi bi-arrow-left"></i> Voltar</a>
+</div>
+<form method="post" enctype="multipart/form-data" class="panel form-grid">
+  {{ form.hidden_tag() }}
+  <label>{{ form.name.label }}{{ form.name() }}</label>
+  <label>{{ form.slug.label }}{{ form.slug() }}</label>
+  <label class="full">{{ form.description.label }}{{ form.description(rows=5) }}</label>
+  <label>{{ form.image.label }}{{ form.image() }}</label>
+  <label>{{ form.display_order.label }}{{ form.display_order() }}</label>
+  <label class="check">{{ form.is_active() }} {{ form.is_active.label }}</label>
+  <label class="check">{{ form.show_on_home() }} {{ form.show_on_home.label }}</label>
+  <div class="full form-actions">{{ form.submit(class='btn') }}</div>
+</form>
+{% endblock %}
