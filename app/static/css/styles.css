@@ -102,10 +102,10 @@
   background:transparent!important;
   border-radius:0!important;
   box-shadow:none!important;
-  width:130%;
+  width:200%;
   max-width:none;
   height:auto;
-  max-height:430px;
+  max-height:550px;
   object-fit:contain;
 }
 .category-row{
