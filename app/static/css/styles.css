@@ -322,3 +322,45 @@
   .menu-toggle,.header-whatsapp{width:44px!important;height:44px!important;border-radius:13px!important}
   .header-whatsapp i{font-size:22px!important;width:22px!important;height:22px!important}
 }
+
+/* Correcao de overflow horizontal do site */
+html,
+body{
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+.site-header,
+.hero,
+.section,
+.banner-blue,
+.footer{
+  max-width:100vw;
+  overflow-x:clip;
+}
+
+.hero-grid,
+.product-grid,
+.about-grid,
+.footer-grid,
+.category-row{
+  min-width:0;
+}
+
+.hero-card-image{
+  max-width:100%;
+}
+
+.hero-card-image .hero-promo-img{
+  max-width:none;
+}
+
+@supports not (overflow:clip){
+  .site-header,
+  .hero,
+  .section,
+  .banner-blue,
+  .footer{
+    overflow-x:hidden;
+  }
+}
