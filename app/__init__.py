@@ -28,7 +28,7 @@ def create_app():
     migrate.init_app(app, db)
     csrf.init_app(app)
 
-    from app.models import Admin, Category, Product, ProductImage, ProductOption, SiteSetting, Page, ContactLead
+    from app.models import Admin, Category, Product, ProductImage, ProductOption, HomeBanner, SiteSetting, Page, ContactLead
     ensure_database_compatibility(app)
 
     from app.routes.public import public_bp
@@ -46,7 +46,7 @@ def prepare_upload_storage(app):
     upload_folder = os.path.abspath(app.config['UPLOAD_FOLDER'])
     app.config['UPLOAD_FOLDER'] = upload_folder
     os.makedirs(upload_folder, exist_ok=True)
-    for subfolder in ('products', 'categories', 'site'):
+    for subfolder in ('products', 'categories', 'site', 'banners'):
         os.makedirs(os.path.join(upload_folder, subfolder), exist_ok=True)
 
     public_uploads = os.path.join(app.static_folder, 'uploads')
@@ -70,7 +70,7 @@ def prepare_upload_storage(app):
     except OSError:
         os.makedirs(public_uploads, exist_ok=True)
         app.config['UPLOAD_FOLDER'] = public_uploads
-        for subfolder in ('products', 'categories', 'site'):
+        for subfolder in ('products', 'categories', 'site', 'banners'):
             os.makedirs(os.path.join(public_uploads, subfolder), exist_ok=True)
 
 
@@ -80,6 +80,10 @@ def ensure_database_compatibility(app):
     with app.app_context():
         try:
             inspector = inspect(db.engine)
+            from app.models import HomeBanner
+            if not inspector.has_table('home_banners'):
+                HomeBanner.__table__.create(db.engine)
+
             if not inspector.has_table('site_settings'):
                 return
 
@@ -131,7 +135,7 @@ def register_template_helpers(app):
 def register_cli(app):
     import click
     from werkzeug.security import generate_password_hash
-    from app.models import Admin, Category, Product, ProductOption, SiteSetting, Page
+    from app.models import Admin, Category, Product, ProductOption, HomeBanner, SiteSetting, Page
     from slugify import slugify
 
     @app.cli.command('seed')

@@ -43,6 +43,17 @@ class ProductForm(FlaskForm):
     allow_online_purchase = BooleanField('Permitir compra online no futuro')
     submit = SubmitField('Salvar')
 
+
+class HomeBannerForm(FlaskForm):
+    title = StringField('Título do banner', validators=[Optional(), Length(max=180)])
+    subtitle = TextAreaField('Texto curto', validators=[Optional(), Length(max=260)])
+    image = FileField('Imagem do banner 1140x340', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])
+    link_url = StringField('Link do banner', validators=[Optional(), Length(max=255)])
+    link_label = StringField('Texto do botão', validators=[Optional(), Length(max=80)])
+    is_active = BooleanField('Ativo')
+    display_order = IntegerField('Ordem', validators=[Optional(), NumberRange(min=0)], default=0)
+    submit = SubmitField('Salvar')
+
 class SettingsForm(FlaskForm):
     site_name = StringField('Nome da gráfica', validators=[DataRequired(), Length(max=160)])
     logo = FileField('Logo', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])

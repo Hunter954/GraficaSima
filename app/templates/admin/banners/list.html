@@ -1,0 +1,30 @@
+{% extends 'admin/base_admin.html' %}
+{% block content %}
+<div class="topbar">
+  <h1><i class="bi bi-images"></i> Banners da home</h1>
+  <a class="btn" href="{{ url_for('admin.banner_create') }}"><i class="bi bi-plus-lg"></i> Novo banner</a>
+</div>
+<div class="panel">
+  <p class="helper-text">Use imagens no tamanho <strong>1140x340px</strong> para encaixar alinhado com o menu, da logomarca até o botão do WhatsApp.</p>
+</div>
+<table>
+  <thead><tr><th>Preview</th><th>Título</th><th>Ordem</th><th>Status</th><th>Ações</th></tr></thead>
+  <tbody>
+  {% for b in items %}
+    <tr>
+      <td>{% if b.image %}<img class="banner-thumb" src="{{ url_for('static', filename=b.image) }}" alt="{{ b.title or 'Banner' }}">{% endif %}</td>
+      <td><strong>{{ b.title or 'Sem título' }}</strong><br><small>{{ b.subtitle }}</small></td>
+      <td>{{ b.display_order }}</td>
+      <td>{% if b.is_active %}<span class="badge ok">Ativo</span>{% else %}<span class="badge off">Inativo</span>{% endif %}</td>
+      <td class="actions-cell">
+        <a class="btn btn-sm btn-soft" href="{{ url_for('admin.banner_edit', id=b.id) }}"><i class="bi bi-pencil"></i> Editar</a>
+        <form class="inline" method="post" action="{{ url_for('admin.banner_toggle', id=b.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn-sm" type="submit">Alternar</button></form>
+        <form class="inline" method="post" action="{{ url_for('admin.banner_delete', id=b.id) }}" onsubmit="return confirm('Excluir este banner?')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn-sm btn-danger" type="submit"><i class="bi bi-trash"></i></button></form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5">Nenhum banner cadastrado.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

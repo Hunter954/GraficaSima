@@ -3,8 +3,8 @@ from flask import Blueprint, render_template, redirect, url_for, flash, session,
 from werkzeug.security import check_password_hash
 from slugify import slugify
 from app import db
-from app.models import Admin, Category, Product, ProductImage, ProductOption, SiteSetting
-from app.forms import LoginForm, CategoryForm, ProductForm, SettingsForm
+from app.models import Admin, Category, Product, ProductImage, ProductOption, HomeBanner, SiteSetting
+from app.forms import LoginForm, CategoryForm, ProductForm, HomeBannerForm, SettingsForm
 from app.utils.security import admin_required, save_image
 
 admin_bp = Blueprint('admin', __name__)
@@ -39,6 +39,7 @@ def dashboard():
         'inactive_products': Product.query.filter_by(is_active=False).count(),
         'categories': Category.query.count(),
         'featured': Product.query.filter_by(is_featured=True).count(),
+        'banners': HomeBanner.query.count(),
     }
     latest = Product.query.order_by(Product.created_at.desc()).limit(5).all()
     return render_template('admin/dashboard.html', stats=stats, latest=latest)
@@ -182,6 +183,59 @@ def product_delete(id):
     flash('Produto excluído.', 'success')
     return redirect(url_for('admin.products'))
 
+
+@admin_bp.route('/banners')
+@admin_required
+def banners():
+    items = HomeBanner.query.order_by(HomeBanner.display_order, HomeBanner.created_at.desc()).all()
+    return render_template('admin/banners/list.html', items=items)
+
+@admin_bp.route('/banners/novo', methods=['GET', 'POST'])
+@admin_required
+def banner_create():
+    form = HomeBannerForm(is_active=True)
+    if form.validate_on_submit():
+        banner = HomeBanner()
+        try:
+            fill_banner(banner, form, require_image=True)
+        except ValueError:
+            return render_template('admin/banners/form.html', form=form, title='Novo banner da home')
+        db.session.add(banner)
+        db.session.commit()
+        flash('Banner criado.', 'success')
+        return redirect(url_for('admin.banners'))
+    return render_template('admin/banners/form.html', form=form, title='Novo banner da home')
+
+@admin_bp.route('/banners/<int:id>/editar', methods=['GET', 'POST'])
+@admin_required
+def banner_edit(id):
+    banner = HomeBanner.query.get_or_404(id)
+    form = HomeBannerForm(obj=banner)
+    if form.validate_on_submit():
+        fill_banner(banner, form, require_image=False)
+        db.session.commit()
+        flash('Banner atualizado.', 'success')
+        return redirect(url_for('admin.banners'))
+    return render_template('admin/banners/form.html', form=form, title='Editar banner da home', banner=banner)
+
+@admin_bp.route('/banners/<int:id>/alternar', methods=['POST'])
+@admin_required
+def banner_toggle(id):
+    banner = HomeBanner.query.get_or_404(id)
+    banner.is_active = not banner.is_active
+    db.session.commit()
+    flash('Status do banner atualizado.', 'success')
+    return redirect(url_for('admin.banners'))
+
+@admin_bp.route('/banners/<int:id>/excluir', methods=['POST'])
+@admin_required
+def banner_delete(id):
+    banner = HomeBanner.query.get_or_404(id)
+    db.session.delete(banner)
+    db.session.commit()
+    flash('Banner excluído.', 'success')
+    return redirect(url_for('admin.banners'))
+
 @admin_bp.route('/configuracoes', methods=['GET', 'POST'])
 @admin_required
 def settings():
@@ -217,6 +271,20 @@ def settings():
         return redirect(url_for('admin.settings'))
     return render_template('admin/settings.html', form=form, settings=settings)
 
+
+
+def fill_banner(banner, form, require_image=False):
+    banner.title = bleach.clean(form.title.data or '')
+    banner.subtitle = bleach.clean(form.subtitle.data or '')
+    banner.link_url = bleach.clean(form.link_url.data or '')
+    banner.link_label = bleach.clean(form.link_label.data or '')
+    banner.is_active = bool(form.is_active.data)
+    banner.display_order = form.display_order.data or 0
+    if has_uploaded_file(form.image.data):
+        banner.image = save_image(form.image.data, 'banners')
+    elif require_image and not banner.image:
+        flash('Envie uma imagem para criar o banner.', 'danger')
+        raise ValueError('Imagem obrigatória')
 
 def has_uploaded_file(value):
     return bool(value and hasattr(value, 'filename') and value.filename)

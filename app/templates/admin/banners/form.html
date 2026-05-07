@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html' %}
+{% block content %}
+<div class="topbar"><h1><i class="bi bi-image"></i> {{ title }}</h1><a href="{{ url_for('admin.banners') }}">Voltar</a></div>
+<form class="panel form-grid" method="post" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+  <label class="full">{{ form.image.label }} {{ form.image }}<small>Recomendado: 1140x340px. Em edição, envie outra imagem somente se quiser trocar.</small></label>
+  {% if banner and banner.image %}<div class="full"><img class="banner-preview" src="{{ url_for('static', filename=banner.image) }}" alt="Preview do banner"></div>{% endif %}
+  <label>{{ form.title.label }} {{ form.title }}</label>
+  <label>{{ form.link_label.label }} {{ form.link_label }}</label>
+  <label class="full">{{ form.subtitle.label }} {{ form.subtitle(rows=3) }}</label>
+  <label class="full">{{ form.link_url.label }} {{ form.link_url }}<small>Opcional. Pode usar /catalogo ou um link completo.</small></label>
+  <label>{{ form.display_order.label }} {{ form.display_order }}</label>
+  <label class="check">{{ form.is_active }} <span>{{ form.is_active.label.text }}</span></label>
+  <div class="full form-actions"><button type="submit"><i class="bi bi-save"></i> Salvar</button><a href="{{ url_for('admin.banners') }}">Cancelar</a></div>
+</form>
+{% endblock %}

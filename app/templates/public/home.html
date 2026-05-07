@@ -1,21 +1,43 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="hero">
-  <div class="container hero-grid">
-    <div class="hero-copy">
-      <span class="eyebrow">Gráfica rápida e personalizada</span>
-      <h1>Sua marca impresso com qualidade e rapidez.</h1>
-      <p>Gráfica completa para sua marca: cartões, adesivos, blocos, pastas, envelopes, agendas e calendários personalizados. Peça seu orçamento pelo WhatsApp.</p>
-      <div class="hero-actions"><a class="btn btn-white" href="{{ url_for('public.catalog') }}"><i class="bi bi-grid"></i> Ver produtos</a><a class="btn btn-outline-white" href="{{ whatsapp_url }}" target="_blank"><i class="bi bi-whatsapp"></i> Pedir orçamento</a></div>
-    </div>
-    <div class="hero-card{% if site_settings.hero_image %} hero-card-image{% endif %}">
-      {% if site_settings.hero_image %}
-        <img class="hero-promo-img" src="{{ url_for('static', filename=site_settings.hero_image) }}" alt="Oferta em destaque">
+<section class="home-banner-section" aria-label="Banners principais">
+  <div class="container">
+    <div class="home-carousel" data-home-carousel>
+      {% if home_banners %}
+        <div class="home-carousel-track">
+          {% for banner in home_banners %}
+            {% set slide_content %}
+              <img src="{{ url_for('static', filename=banner.image) }}" alt="{{ banner.title or site_settings.site_name }}">
+              {% if banner.title or banner.subtitle or banner.link_label %}
+                <div class="home-banner-content">
+                  {% if banner.title %}<h1>{{ banner.title }}</h1>{% endif %}
+                  {% if banner.subtitle %}<p>{{ banner.subtitle }}</p>{% endif %}
+                  {% if banner.link_url and banner.link_label %}<span class="home-banner-btn">{{ banner.link_label }}</span>{% endif %}
+                </div>
+              {% endif %}
+            {% endset %}
+            {% if banner.link_url %}
+              <a class="home-slide{% if loop.first %} is-active{% endif %}" href="{{ banner.link_url }}" aria-label="{{ banner.title or 'Banner' }}">{{ slide_content }}</a>
+            {% else %}
+              <div class="home-slide{% if loop.first %} is-active{% endif %}">{{ slide_content }}</div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% if home_banners|length > 1 %}
+          <button class="home-carousel-arrow home-carousel-prev" type="button" aria-label="Banner anterior"><i class="bi bi-chevron-left"></i></button>
+          <button class="home-carousel-arrow home-carousel-next" type="button" aria-label="Próximo banner"><i class="bi bi-chevron-right"></i></button>
+          <div class="home-carousel-dots" aria-label="Navegação dos banners">
+            {% for banner in home_banners %}<button type="button" class="{% if loop.first %}is-active{% endif %}" aria-label="Ir para banner {{ loop.index }}"></button>{% endfor %}
+          </div>
+        {% endif %}
       {% else %}
-        <span class="tag">Oferta destaque</span>
-        <h2>Folheto 15x21cm</h2>
-        <p>Impressão frente e verso, papel couchê e acabamento profissional.</p>
-        <strong>Consulte valores</strong>
+        <div class="home-slide is-active home-slide-empty">
+          <div>
+            <span>Banner principal</span>
+            <strong>Cadastre banners da home no painel admin</strong>
+            <small>Tamanho recomendado: 1140x340px</small>
+          </div>
+        </div>
       {% endif %}
     </div>
   </div>
@@ -64,3 +86,5 @@
   </div>
 </section>
 {% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static', filename='js/home-carousel.js') }}"></script>{% endblock %}

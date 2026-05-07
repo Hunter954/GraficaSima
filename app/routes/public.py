@@ -2,7 +2,7 @@ import bleach
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from sqlalchemy import or_
 from app import db
-from app.models import Category, Product, Page, ContactLead
+from app.models import Category, Product, Page, ContactLead, HomeBanner
 from app.forms import ContactForm
 from app.services.whatsapp_service import product_whatsapp_url, generic_whatsapp_url
 
@@ -13,7 +13,8 @@ def home():
     featured = Product.query.filter_by(is_active=True, is_featured=True).order_by(Product.display_order, Product.created_at.desc()).limit(8).all()
     categories = Category.query.filter_by(is_active=True, show_on_home=True).order_by(Category.display_order, Category.name).limit(6).all()
     latest = Product.query.filter_by(is_active=True).order_by(Product.created_at.desc()).limit(6).all()
-    return render_template('public/home.html', featured=featured, categories=categories, latest=latest, whatsapp_url=generic_whatsapp_url())
+    home_banners = HomeBanner.query.filter_by(is_active=True).order_by(HomeBanner.display_order, HomeBanner.created_at.desc()).all()
+    return render_template('public/home.html', featured=featured, categories=categories, latest=latest, home_banners=home_banners, whatsapp_url=generic_whatsapp_url())
 
 @public_bp.route('/catalogo')
 def catalog():

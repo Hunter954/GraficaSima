@@ -68,6 +68,18 @@ class ProductOption(db.Model, TimestampMixin):
     display_order = db.Column(db.Integer, default=0, nullable=False)
     product = db.relationship('Product', back_populates='options')
 
+
+class HomeBanner(db.Model, TimestampMixin):
+    __tablename__ = 'home_banners'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(180))
+    subtitle = db.Column(db.String(260))
+    image = db.Column(db.String(255), nullable=False)
+    link_url = db.Column(db.String(255))
+    link_label = db.Column(db.String(80))
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    display_order = db.Column(db.Integer, default=0, nullable=False)
+
 class SiteSetting(db.Model, TimestampMixin):
     __tablename__ = 'site_settings'
     id = db.Column(db.Integer, primary_key=True)
