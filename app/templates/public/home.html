@@ -62,7 +62,7 @@
 
 <section class="section muted">
   <div class="container section-title"><span>Produtos</span><h2>Produtos em destaque e ofertas exclusivas</h2></div>
-  <div class="container product-grid">
+  <div class="container product-grid home-products-grid">
     {% for p in featured or latest %}{% include 'public/_product_card.html' %}{% endfor %}
     <a class="see-all-card" href="{{ url_for('public.catalog') }}"><h3>Veja todos nossos produtos</h3><p>Encontre facilmente o produto que você procura navegando por categorias.</p><span><i class="bi bi-grid"></i> Ver catálogo</span></a>
   </div>
