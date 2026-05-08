@@ -1,0 +1,16 @@
+{% extends 'admin/base_admin.html' %}
+{% block content %}
+<div class="topbar">
+  <h1><i class="bi bi-person-gear"></i> {{ title }}</h1>
+  <a class="btn btn-soft" href="{{ url_for('admin.admin_users') }}"><i class="bi bi-arrow-left"></i> Voltar</a>
+</div>
+<form method="post" class="panel form-grid">
+  {{ form.hidden_tag() }}
+  <label>{{ form.name.label }}{{ form.name() }}{% for error in form.name.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>
+  <label>{{ form.email.label }}{{ form.email() }}{% for error in form.email.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>
+  <label>{{ form.password.label }}{{ form.password(autocomplete='new-password') }}<small>{{ form.password.description }}</small>{% for error in form.password.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>
+  <label>{{ form.confirm_password.label }}{{ form.confirm_password(autocomplete='new-password') }}{% for error in form.confirm_password.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</label>
+  <label class="check">{{ form.is_active() }} {{ form.is_active.label }}</label>
+  <div class="full form-actions">{{ form.submit(class='btn') }} <a class="btn btn-soft" href="{{ url_for('admin.admin_users') }}">Cancelar</a></div>
+</form>
+{% endblock %}

@@ -1,10 +1,10 @@
 import bleach
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from slugify import slugify
 from app import db
 from app.models import Admin, Category, Product, ProductImage, ProductOption, HomeBanner, SiteSetting
-from app.forms import LoginForm, CategoryForm, ProductForm, HomeBannerForm, SettingsForm
+from app.forms import LoginForm, AdminUserForm, CategoryForm, ProductForm, HomeBannerForm, SettingsForm
 from app.utils.security import admin_required, save_image
 
 admin_bp = Blueprint('admin', __name__)
@@ -40,9 +40,103 @@ def dashboard():
         'categories': Category.query.count(),
         'featured': Product.query.filter_by(is_featured=True).count(),
         'banners': HomeBanner.query.count(),
+        'admins': Admin.query.count(),
+        'active_admins': Admin.query.filter_by(is_active=True).count(),
     }
     latest = Product.query.order_by(Product.created_at.desc()).limit(5).all()
     return render_template('admin/dashboard.html', stats=stats, latest=latest)
+
+
+@admin_bp.route('/administradores')
+@admin_required
+def admin_users():
+    items = Admin.query.order_by(Admin.is_active.desc(), Admin.name.asc()).all()
+    return render_template('admin/admins/list.html', items=items)
+
+@admin_bp.route('/administradores/novo', methods=['GET', 'POST'])
+@admin_required
+def admin_user_create():
+    form = AdminUserForm(is_active=True)
+    form.password.validators = [validator for validator in form.password.validators if validator.__class__.__name__ != 'Optional']
+    if form.validate_on_submit():
+        email = normalize_email(form.email.data)
+        if Admin.query.filter_by(email=email).first():
+            flash('Já existe um administrador com este e-mail.', 'danger')
+            return render_template('admin/admins/form.html', form=form, title='Novo administrador')
+        admin = Admin(
+            name=bleach.clean(form.name.data),
+            email=email,
+            password_hash=generate_password_hash(form.password.data),
+            is_active=bool(form.is_active.data),
+        )
+        db.session.add(admin)
+        db.session.commit()
+        flash('Administrador criado com sucesso.', 'success')
+        return redirect(url_for('admin.admin_users'))
+    return render_template('admin/admins/form.html', form=form, title='Novo administrador')
+
+@admin_bp.route('/administradores/<int:id>/editar', methods=['GET', 'POST'])
+@admin_required
+def admin_user_edit(id):
+    admin = Admin.query.get_or_404(id)
+    form = AdminUserForm(obj=admin)
+    if form.validate_on_submit():
+        email = normalize_email(form.email.data)
+        duplicated = Admin.query.filter(Admin.email == email, Admin.id != admin.id).first()
+        if duplicated:
+            flash('Já existe outro administrador com este e-mail.', 'danger')
+            return render_template('admin/admins/form.html', form=form, title='Editar administrador', admin=admin)
+        requested_active = bool(form.is_active.data)
+        if admin.id == session.get('admin_id') and not requested_active:
+            flash('Você não pode desativar o seu próprio usuário enquanto está logado.', 'danger')
+            form.is_active.data = True
+            return render_template('admin/admins/form.html', form=form, title='Editar administrador', admin=admin)
+        if admin.is_active and not requested_active and active_admin_count(excluding_id=admin.id) == 0:
+            flash('Mantenha pelo menos um administrador ativo no painel.', 'danger')
+            form.is_active.data = True
+            return render_template('admin/admins/form.html', form=form, title='Editar administrador', admin=admin)
+
+        admin.name = bleach.clean(form.name.data)
+        admin.email = email
+        admin.is_active = requested_active
+        if form.password.data:
+            admin.password_hash = generate_password_hash(form.password.data)
+        db.session.commit()
+        if admin.id == session.get('admin_id'):
+            session['admin_name'] = admin.name
+        flash('Administrador atualizado com sucesso.', 'success')
+        return redirect(url_for('admin.admin_users'))
+    return render_template('admin/admins/form.html', form=form, title='Editar administrador', admin=admin)
+
+@admin_bp.route('/administradores/<int:id>/alternar', methods=['POST'])
+@admin_required
+def admin_user_toggle(id):
+    admin = Admin.query.get_or_404(id)
+    if admin.id == session.get('admin_id'):
+        flash('Você não pode desativar o seu próprio usuário enquanto está logado.', 'danger')
+        return redirect(url_for('admin.admin_users'))
+    if admin.is_active and active_admin_count(excluding_id=admin.id) == 0:
+        flash('Mantenha pelo menos um administrador ativo no painel.', 'danger')
+        return redirect(url_for('admin.admin_users'))
+    admin.is_active = not admin.is_active
+    db.session.commit()
+    flash('Status do administrador atualizado.', 'success')
+    return redirect(url_for('admin.admin_users'))
+
+@admin_bp.route('/administradores/<int:id>/excluir', methods=['POST'])
+@admin_required
+def admin_user_delete(id):
+    admin = Admin.query.get_or_404(id)
+    if admin.id == session.get('admin_id'):
+        flash('Você não pode excluir o seu próprio usuário enquanto está logado.', 'danger')
+        return redirect(url_for('admin.admin_users'))
+    if admin.is_active and active_admin_count(excluding_id=admin.id) == 0:
+        flash('Mantenha pelo menos um administrador ativo no painel.', 'danger')
+        return redirect(url_for('admin.admin_users'))
+    db.session.delete(admin)
+    db.session.commit()
+    flash('Administrador excluído com sucesso.', 'success')
+    return redirect(url_for('admin.admin_users'))
 
 @admin_bp.route('/categorias')
 @admin_required
@@ -271,6 +365,17 @@ def settings():
         return redirect(url_for('admin.settings'))
     return render_template('admin/settings.html', form=form, settings=settings)
 
+
+
+def normalize_email(value):
+    return (value or '').lower().strip()
+
+
+def active_admin_count(excluding_id=None):
+    query = Admin.query.filter_by(is_active=True)
+    if excluding_id is not None:
+        query = query.filter(Admin.id != excluding_id)
+    return query.count()
 
 
 def fill_banner(banner, form, require_image=False):

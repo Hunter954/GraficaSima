@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, MultipleFileField, FileAllowed
 from wtforms import StringField, PasswordField, TextAreaField, BooleanField, IntegerField, DecimalField, SelectField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, Optional, NumberRange
+from wtforms.validators import DataRequired, Email, Length, Optional, NumberRange, EqualTo
 
 IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif']
 FAVICON_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'ico']
@@ -10,6 +10,15 @@ class LoginForm(FlaskForm):
     email = StringField('E-mail', validators=[DataRequired(), Email(), Length(max=180)])
     password = PasswordField('Senha', validators=[DataRequired(), Length(min=6, max=120)])
     submit = SubmitField('Entrar')
+
+
+class AdminUserForm(FlaskForm):
+    name = StringField('Nome do administrador', validators=[DataRequired(), Length(max=120)])
+    email = StringField('E-mail de acesso', validators=[DataRequired(), Email(), Length(max=180)])
+    password = PasswordField('Senha', validators=[Optional(), Length(min=6, max=120)], description='Preencha somente se quiser definir ou trocar a senha.')
+    confirm_password = PasswordField('Confirmar senha', validators=[Optional(), EqualTo('password', message='As senhas precisam ser iguais.')])
+    is_active = BooleanField('Administrador ativo')
+    submit = SubmitField('Salvar administrador')
 
 class CategoryForm(FlaskForm):
     name = StringField('Nome', validators=[DataRequired(), Length(max=140)])
