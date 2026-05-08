@@ -83,6 +83,11 @@ def ensure_database_compatibility(app):
             from app.models import HomeBanner
             if not inspector.has_table('home_banners'):
                 HomeBanner.__table__.create(db.engine)
+            else:
+                home_banner_columns = {column['name'] for column in inspector.get_columns('home_banners')}
+                if 'image_mobile' not in home_banner_columns:
+                    with db.engine.begin() as connection:
+                        connection.execute(text('ALTER TABLE home_banners ADD COLUMN image_mobile VARCHAR(255)'))
 
             if not inspector.has_table('site_settings'):
                 return
@@ -104,7 +109,7 @@ def ensure_database_compatibility(app):
                         connection.execute(text('ALTER TABLE categories ADD COLUMN show_on_home BOOLEAN NOT NULL DEFAULT TRUE'))
         except (OperationalError, ProgrammingError) as exc:
             message = str(exc).lower()
-            if any(column_name in message for column_name in ('hero_image', 'about_image_1', 'about_image_2', 'about_image_3', 'favicon', 'show_on_home')) and ('duplicate' in message or 'already exists' in message):
+            if any(column_name in message for column_name in ('hero_image', 'about_image_1', 'about_image_2', 'about_image_3', 'favicon', 'show_on_home', 'image_mobile')) and ('duplicate' in message or 'already exists' in message):
                 return
             raise
 

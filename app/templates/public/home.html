@@ -7,7 +7,10 @@
         <div class="home-carousel-track">
           {% for banner in home_banners %}
             {% set slide_content %}
-              <img src="{{ url_for('static', filename=banner.image) }}" alt="{{ banner.title or site_settings.site_name }}">
+              <picture>
+                {% if banner.image_mobile %}<source media="(max-width: 640px)" srcset="{{ url_for('static', filename=banner.image_mobile) }}">{% endif %}
+                <img src="{{ url_for('static', filename=banner.image) }}" alt="{{ banner.title or site_settings.site_name }}">
+              </picture>
               {% if banner.title or banner.subtitle or banner.link_label %}
                 <div class="home-banner-content">
                   {% if banner.title %}<h1>{{ banner.title }}</h1>{% endif %}

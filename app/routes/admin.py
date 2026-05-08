@@ -282,6 +282,8 @@ def fill_banner(banner, form, require_image=False):
     banner.display_order = form.display_order.data or 0
     if has_uploaded_file(form.image.data):
         banner.image = save_image(form.image.data, 'banners')
+    if has_uploaded_file(form.image_mobile.data):
+        banner.image_mobile = save_image(form.image_mobile.data, 'banners')
     elif require_image and not banner.image:
         flash('Envie uma imagem para criar o banner.', 'danger')
         raise ValueError('Imagem obrigatória')

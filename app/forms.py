@@ -47,7 +47,8 @@ class ProductForm(FlaskForm):
 class HomeBannerForm(FlaskForm):
     title = StringField('Título do banner', validators=[Optional(), Length(max=180)])
     subtitle = TextAreaField('Texto curto', validators=[Optional(), Length(max=260)])
-    image = FileField('Imagem do banner 1140x340', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])
+    image = FileField('Imagem desktop do banner 1140x340', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])
+    image_mobile = FileField('Imagem mobile do banner 720x420', validators=[Optional(), FileAllowed(IMAGE_EXTENSIONS, 'Apenas imagens')])
     link_url = StringField('Link do banner', validators=[Optional(), Length(max=255)])
     link_label = StringField('Texto do botão', validators=[Optional(), Length(max=80)])
     is_active = BooleanField('Ativo')

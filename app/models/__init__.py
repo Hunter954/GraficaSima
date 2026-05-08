@@ -75,6 +75,7 @@ class HomeBanner(db.Model, TimestampMixin):
     title = db.Column(db.String(180))
     subtitle = db.Column(db.String(260))
     image = db.Column(db.String(255), nullable=False)
+    image_mobile = db.Column(db.String(255))
     link_url = db.Column(db.String(255))
     link_label = db.Column(db.String(80))
     is_active = db.Column(db.Boolean, default=True, nullable=False)
